@@ -133,6 +133,28 @@
   padding: 1rem 1.25rem;
   color: var(--muted);
 }
+.add-box{
+  margin-top: 10px;
+  padding: 12px 12px;
+  background: var(--panel, #fff);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  color: var(--ink, #22313a);
+}
+
+/* Info.css에 추가 */
+.meta-lines{
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+}
+.meta-line{
+  display: block; /* span을 줄바꿈 처리 */
+  color:rgb(0, 0, 0)a;
+}
+
 
 @media (max-width: 980px) {
   .snack-grid { grid-template-columns: 1fr; }
