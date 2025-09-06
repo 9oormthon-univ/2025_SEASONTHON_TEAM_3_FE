@@ -50,7 +50,7 @@ const LIST_URL = `${API_BASE}/api/snacks`;
 
 export default function Find() {
   const navigate = useNavigate();
-  const { isFavorite, toggle } = useFavorites();
+  const { isFavorite, toggle, fetchFavorites } = useFavorites();
   const abortRef = useRef(null);
 
   // 실제 적용 상태
@@ -88,6 +88,12 @@ export default function Find() {
     setBadges([]); setBadgesDraft([]);
     setPage(0);
   };
+
+  // 페이지 로드 시 찜한 간식 목록 가져오기 (한 번만)
+  useEffect(() => {
+    console.log('찜한 간식 목록 가져오기 시작');
+    fetchFavorites();
+  }, []); // 빈 의존성 배열로 한 번만 실행
 
   // ====== API 호출 (size=6 강제, 6개 초과시 slice) ======
   useEffect(() => {
@@ -251,9 +257,10 @@ export default function Find() {
                   <img src={s.image} alt={s.name} onError={onThumbError} />
                   <Heart
                     on={isFavorite(s.id)}
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.stopPropagation();
-                      toggle({ id: s.id, name: s.name, brand: s.brand, image: s.image, category: s.category });
+                      console.log('하트 클릭:', s.id, '현재 찜 상태:', isFavorite(s.id));
+                      await toggle(Number(s.id));
                     }}
                   />
                 </div>

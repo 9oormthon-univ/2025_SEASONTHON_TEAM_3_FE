@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import "./Info.css";
 import Loading from "./Loading";
+import { useFavorites } from "./FavoritesContext";
 
 // 백엔드 베이스 URL
 const API_BASE =
@@ -13,10 +14,16 @@ export default function Info() {
   const [sp] = useSearchParams();
   const idParam = sp.get("id");
   const snackId = idParam && /^\d+$/.test(idParam) ? idParam : null;
+  const { isFavorite, toggle, fetchFavorites } = useFavorites();
 
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [snack, setSnack] = useState(null);
+
+  // 페이지 로드 시 찜한 간식 목록 가져오기 (한 번만)
+  useEffect(() => {
+    fetchFavorites();
+  }, []); // 빈 의존성 배열로 한 번만 실행
 
   useEffect(() => {
     if (!snackId) {
@@ -144,8 +151,41 @@ export default function Info() {
             />
           </div>
           <div className="info-basic">
-            <h1 className="info-name">{snack.name}</h1>
-            <p className="info-brand">{snack.brand}</p>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+              <div>
+                <h1 className="info-name">{snack.name}</h1>
+                <p className="info-brand">{snack.brand}</p>
+              </div>
+              <button
+                className={`fav-btn ${isFavorite(snack.id) ? 'on' : ''}`}
+                onClick={async () => {
+                  console.log('상세페이지 하트 클릭:', snack.id, '현재 찜 상태:', isFavorite(snack.id));
+                  await toggle(Number(snack.id));
+                }}
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  border: 'none',
+                  background: 'transparent',
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}
+                aria-label={isFavorite(snack.id) ? "찜 해제" : "찜하기"}
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                  <path
+                    d="M12 20.8C6.8 16.9 3.2 13.9 3.2 10.3 3.2 8 5 6.2 7.3 6.2c1.6 0 3 .8 3.7 2 .8-1.2 2.1-2 3.7-2 2.3 0 4.1 1.8 4.1 4.1 0 3.6-3.6 6.6-9.8 10.5Z"
+                    fill={isFavorite(snack.id) ? "#e53935" : "none"}
+                    stroke={isFavorite(snack.id) ? "#e53935" : "#666"}
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
 
             {/* 해시태그 */}
             {snack.hashtags?.length > 0 && (
