@@ -13,7 +13,7 @@ const UPDATE_PROFILE_URL = `${API_BASE}/user/profile`; // PATCH
 
 export default function MyPage() {
   const navigate = useNavigate();
-  const { favorites, remove, fetchFavorites } = useFavorites();
+  const { favorites, remove, fetchFavorites } = useFavorites(); 
   const [tab, setTab] = useState("profile");
 
   // 라벨/순서
