@@ -1,3 +1,4 @@
+// src/Signup.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Signup.css";
@@ -5,6 +6,12 @@ import "./Signup.css";
 function Signup() {
   const navigate = useNavigate();
 
+  // ✅ API 엔드포인트
+  const DEFAULT_API_BASE = "http://3.35.209.210:8080";
+  const API_BASE = import.meta.env.VITE_API_BASE || DEFAULT_API_BASE;
+  const SIGNUP_URL = `${API_BASE}/user/signUp`; // Swagger와 동일
+
+  // ✅ 건강 목적(백엔드로 value 전송)
   const HEALTH_CONCERNS = [
     { value: "BLOOD_SUGAR",    label: "혈당" },
     { value: "BLOOD_PRESSURE", label: "고혈압" },
@@ -14,6 +21,7 @@ function Signup() {
     { value: "HEART",          label: "심혈관" },
   ];
 
+  // ✅ 알레르기(백엔드로 value 전송)
   const ALLERGIES = [
     { value: "MILK",      label: "우유" },
     { value: "EGG",       label: "계란" },
@@ -33,84 +41,105 @@ function Signup() {
     password: "",
     confirm: "",
     agree: false,
-    healthConcerns: [],
-    allergies: [],
+    healthConcerns: [], // 예: ["BLOOD_SUGAR","HEART"]
+    allergies: [],      // 예: ["MILK","SOY"]
   });
 
   const [showPw, setShowPw] = useState(false);
   const [showPw2, setShowPw2] = useState(false);
   const [touched, setTouched] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [serverMsg, setServerMsg] = useState("");
 
-  // ✅ 이메일 검사 복구
+  // ✅ 검증
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-
   function validate(values) {
     const e = {};
     if (!values.username.trim()) e.username = "이름을 입력하세요.";
-
     if (!values.email.trim()) e.email = "이메일을 입력하세요.";
-    else if (!emailRegex.test(values.email))
-      e.email = "이메일 형식이 올바르지 않습니다.";
-
+    else if (!emailRegex.test(values.email)) e.email = "이메일 형식이 올바르지 않습니다.";
     if (!values.password) e.password = "비밀번호를 입력하세요.";
-    else if (values.password.length < 5)
-      e.password = "비밀번호는 5자 이상이어야 합니다.";
-
+    else if (values.password.length < 8) e.password = "비밀번호는 8자 이상이어야 합니다.";
     if (!values.confirm) e.confirm = "비밀번호를 한 번 더 입력하세요.";
-    else if (values.password !== values.confirm)
-      e.confirm = "비밀번호가 일치하지 않습니다.";
-
+    else if (values.password !== values.confirm) e.confirm = "비밀번호가 일치하지 않습니다.";
     if (!values.agree) e.agree = "약관에 동의해야 가입할 수 있습니다.";
-
     return e;
   }
-
   const errors = validate(form);
   const isValid = Object.keys(errors).length === 0;
 
+  // ✅ 입력 핸들러
   function handleChange(e) {
     const { name, type, checked, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
   }
-
   function handleBlur(e) {
     const { name } = e.target;
     setTouched((prev) => ({ ...prev, [name]: true }));
   }
 
-  // ✅ 칩 토글 공용 핸들러
+  // ✅ 칩 토글(코드 값 저장)
   const toggleChip = (field, val) => {
     setForm((prev) => {
-      const selected = prev[field];
-      const has = selected.includes(val);
-      const next = has ? selected.filter((v) => v !== val) : [...selected, val];
+      const list = prev[field];
+      const next = list.includes(val) ? list.filter((v) => v !== val) : [...list, val];
       return { ...prev, [field]: next };
     });
   };
-  const clearChips = (field) => {
-    setForm((prev) => ({ ...prev, [field]: [] }));
-  };
+  const clearChips = (field) => setForm((prev) => ({ ...prev, [field]: [] }));
 
-  function handleSubmit(e) {
+  // ✅ 제출: 서버 스펙에 맞춰 6개 필드 전송
+  async function handleSubmit(e) {
     e.preventDefault();
-    if (!isValid) return;
+    if (!isValid || submitting) return;
 
-    // ✅ MyPage에서 읽을 수 있도록 저장
-    localStorage.setItem("healthConcerns", JSON.stringify(form.healthConcerns));
-    localStorage.setItem("allergies", JSON.stringify(form.allergies));
+    setSubmitting(true);
+    setServerMsg("");
 
-    // ✅ 로그인 화면 연동을 위한 이름/이메일 저장
-    localStorage.setItem("signup_username", form.username);
-    localStorage.setItem("signup_email", form.email);
-
-    console.log("signup payload:", {
-      username: form.username,
+    const payload = {
       email: form.email,
-      healthConcerns: form.healthConcerns,
-      allergies: form.allergies,
-    });
+      password: form.password,
+      name: form.username,
+      allergies: form.allergies,             // ["MILK","SOY"] …
+      purposes: form.healthConcerns,         // ["BLOOD_SUGAR","HEART"] …
+      createdAt: new Date().toISOString(),
+    };
 
-    navigate("/login");
+    try {
+      const res = await fetch(SIGNUP_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const text = await res.text();
+      let data = null;
+      try { data = text ? JSON.parse(text) : null; } catch {}
+
+      const success = res.ok && (data?.success !== false);
+      if (!success) {
+        const msg =
+          data?.message ||
+          data?.errorCode ||
+          (res.status >= 500 ? "서버 오류가 발생했습니다." : `요청이 거절되었습니다. (HTTP ${res.status})`);
+        setServerMsg(msg);
+        setSubmitting(false);
+        return;
+      }
+
+      // 개인화 저장(필요 시 마이페이지/홈에서 사용)
+      localStorage.setItem("signup_username", form.username);
+      localStorage.setItem("signup_email", form.email);
+      localStorage.setItem("healthConcerns", JSON.stringify(form.healthConcerns));
+      localStorage.setItem("allergies", JSON.stringify(form.allergies));
+
+      alert((data?.result || data?.message) ?? "가입이 완료되었습니다.");
+      navigate("/login");
+    } catch (err) {
+      console.error("[SIGNUP] network error:", err);
+      setServerMsg("네트워크/CORS 오류가 발생했습니다.");
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -118,7 +147,7 @@ function Signup() {
       <div className="signup-wrapper">
         <h1 className="signup-title">회원가입</h1>
 
-        <form className="signup-form" onSubmit={handleSubmit} noValidate>
+        <form className="signup-form" onSubmit={handleSubmit} noValidate aria-busy={submitting}>
           {/* 이름 */}
           <label className="label" htmlFor="username">이름</label>
           <input
@@ -126,18 +155,16 @@ function Signup() {
             name="username"
             className="input"
             type="text"
-            placeholder="예: silversnack_user"
+            placeholder="예: 홍길동"
             value={form.username}
             onChange={handleChange}
             onBlur={handleBlur}
             aria-invalid={touched.username && !!errors.username}
             aria-describedby={touched.username && errors.username ? "username-err" : undefined}
-            autoComplete="username"
+            autoComplete="name"
             required
           />
-          {touched.username && errors.username && (
-            <p id="username-err" className="error">{errors.username}</p>
-          )}
+          {touched.username && errors.username && <p id="username-err" className="error">{errors.username}</p>}
 
           {/* 이메일 */}
           <label className="label" htmlFor="email">이메일</label>
@@ -155,9 +182,7 @@ function Signup() {
             autoComplete="email"
             required
           />
-          {touched.email && errors.email && (
-            <p id="email-err" className="error">{errors.email}</p>
-          )}
+          {touched.email && errors.email && <p id="email-err" className="error">{errors.email}</p>}
 
           {/* 비밀번호 */}
           <label className="label" htmlFor="password">비밀번호</label>
@@ -176,17 +201,11 @@ function Signup() {
               autoComplete="new-password"
               required
             />
-            <button
-              type="button"
-              className="ghost-btn"
-              onClick={() => setShowPw((s) => !s)}
-            >
+            <button type="button" className="ghost-btn" onClick={() => setShowPw((s) => !s)}>
               {showPw ? "숨김" : "표시"}
             </button>
           </div>
-          {touched.password && errors.password && (
-            <p id="password-err" className="error">{errors.password}</p>
-          )}
+          {touched.password && errors.password && <p id="password-err" className="error">{errors.password}</p>}
 
           {/* 비밀번호 확인 */}
           <label className="label" htmlFor="confirm">비밀번호 확인</label>
@@ -205,19 +224,13 @@ function Signup() {
               autoComplete="new-password"
               required
             />
-            <button
-              type="button"
-              className="ghost-btn"
-              onClick={() => setShowPw2((s) => !s)}
-            >
+            <button type="button" className="ghost-btn" onClick={() => setShowPw2((s) => !s)}>
               {showPw2 ? "숨김" : "표시"}
             </button>
           </div>
-          {touched.confirm && errors.confirm && (
-            <p id="confirm-err" className="error">{errors.confirm}</p>
-          )}
+          {touched.confirm && errors.confirm && <p id="confirm-err" className="error">{errors.confirm}</p>}
 
-          {/* 건강상태 체크 */}
+          {/* 건강상태 체크 (다중 선택) */}
           <div className="hc-section">
             <div className="hc-head">
               <label className="label">건강상태 체크</label>
@@ -232,6 +245,8 @@ function Signup() {
                     type="button"
                     className={`hc-chip ${active ? "is-active" : ""}`}
                     onClick={() => toggleChip("healthConcerns", value)}
+                    aria-pressed={active}
+                    role="checkbox"
                   >
                     <span className="hc-dot" />
                     <span>{label}</span>
@@ -248,9 +263,9 @@ function Signup() {
             </div>
           </div>
 
-          {/* 알레르기 체크 */}
-          <div>
-            <div>
+          {/* 알레르기 체크 (다중 선택) */}
+          <div className="hc-section">
+            <div className="hc-head">
               <label className="label">알레르기 체크</label>
               <p className="hc-subtitle">가지고 계신 알레르기를 선택하세요. (다중 선택)</p>
             </div>
@@ -263,6 +278,8 @@ function Signup() {
                     type="button"
                     className={`hc-chip ${active ? "is-active" : ""}`}
                     onClick={() => toggleChip("allergies", value)}
+                    aria-pressed={active}
+                    role="checkbox"
                   >
                     <span className="hc-dot" />
                     <span>{label}</span>
@@ -279,7 +296,7 @@ function Signup() {
             </div>
           </div>
 
-          {/* 약관 */}
+          {/* 약관 동의 */}
           <label className="agree">
             <input
               type="checkbox"
@@ -287,16 +304,18 @@ function Signup() {
               checked={form.agree}
               onChange={handleChange}
               onBlur={handleBlur}
+              aria-invalid={touched.agree && !!errors.agree}
             />
             <span>이용약관 및 개인정보 처리방침에 동의합니다.</span>
           </label>
-          {touched.agree && errors.agree && (
-            <p className="error">{errors.agree}</p>
-          )}
+          {touched.agree && errors.agree && <p className="error">{errors.agree}</p>}
+
+          {/* 서버 메시지 */}
+          {serverMsg && <p className="error" role="alert" style={{ marginTop: 4 }}>{serverMsg}</p>}
 
           {/* 제출 버튼 */}
-          <button className="submit-btn" type="submit" disabled={!isValid}>
-            가입하기
+          <button className="submit-btn" type="submit" disabled={!isValid || submitting}>
+            {submitting ? "가입 중..." : "가입하기"}
           </button>
 
           <p className="foot">
