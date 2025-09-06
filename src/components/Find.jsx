@@ -7,8 +7,15 @@ function Heart({ on, ...rest }) {
   return (
     <button type="button" className={`fav-btn ${on ? "on" : ""}`} {...rest} aria-label="찜하기/해제">
       <svg width="18" height="18" viewBox="0 0 24 24">
-        <path d="M12 21s-7.2-4.35-9.6-8.4C1 10 2.4 6.6 6 6.6c2 0 3.4 1.1 4 2.1.6-1 2-2.1 4-2.1 3.6 0 5 3.4 3.6 6-2.4 4.05-9.6 8.4-9.6 8.4Z"
-          fill={on ? "#e53935" : "rgba(0,0,0,.0)"} stroke={on ? "#e53935" : "#fff"} strokeWidth="1.6"/>
+        <path
+          d="M12 20.8C6.8 16.9 3.2 13.9 3.2 10.3 3.2 8 5 6.2 7.3 6.2c1.6 0 3 .8 3.7 2 .8-1.2 2.1-2 3.7-2 2.3 0 4.1 1.8 4.1 4.1 0 3.6-3.6 6.6-9.8 10.5Z"
+
+          fill={on ? "#e53935" : "rgba(0,0,0,.0)"}
+          stroke={on ? "#e53935" : "#fff"}
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
     </button>
   );
@@ -18,10 +25,10 @@ function Find() {
   const navigate = useNavigate(); // ✅ 추가
 
   const snacks = [
-    { id: 1, name: "오곡바", brand: "실버스낵", image: "/images/snack-example.png", category: "바", badges: ["저당","저염","부드러움","카페인없음"] },
-    { id: 2, name: "고구마칩", brand: "헬시푸드", image: "/images/snack-sweetpotato.png", category: "칩", badges: ["저당","글루텐프리"] },
-    { id: 3, name: "현미쿠키", brand: "그레인랩", image: "/images/snack-cookie.png", category: "쿠키", badges: ["저당"] },
-    { id: 4, name: "캐모마일티", brand: "허브하우스", image: "/images/snack-tea.png", category: "음료", badges: ["카페인없음","부드러움"] },
+    { id: 1, name: "오곡바", brand: "실버스낵", image: "silver-snack-logo.png", category: "바", badges: ["저당","저염","부드러움","카페인없음"] },
+    { id: 2, name: "고구마칩", brand: "헬시푸드", image: "silver-snack-logo.png", category: "칩", badges: ["저당","글루텐프리"] },
+    { id: 3, name: "현미쿠키", brand: "그레인랩", image: "silver-snack-logo.png", category: "쿠키", badges: ["저당"] },
+    { id: 4, name: "캐모마일티", brand: "허브하우스", image: "silver-snack-logo.png", category: "음료", badges: ["카페인없음","부드러움"] },
   ];
 
   const categories = ["전체", "곡물가공품", "즉석식품", "건강보충식", "음료", "유제품", "과자류·빵류·떡", "면류"];

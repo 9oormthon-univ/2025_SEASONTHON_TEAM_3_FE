@@ -1,6 +1,10 @@
 :root {
-    /* Header.css의 높이와 반드시 동일하게 */
     --header-height: 60px;
+    --bg: #f3f8ec;
+    --green: #2e7d32;
+    --green-dark: #1b5e20;
+    --border: #d0d5dd;
+    --muted: #667085;
   }
   
   /* 혹시 상위 레이아웃이 CSS Grid라도 전체 폭으로 뽑아 쓰게 강제 */
@@ -11,7 +15,7 @@
     margin-top: var(--header-height);    /* fixed 헤더 피하기 */
     display: grid;
     place-items: center;                 /* 가로·세로 중앙 정렬 */
-    background: #f0f2f5;
+    background: var(--bg);
     font-family: Arial, sans-serif;
   }
   

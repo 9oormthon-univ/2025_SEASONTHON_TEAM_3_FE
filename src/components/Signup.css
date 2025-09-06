@@ -1,5 +1,6 @@
 :root {
     --header-height: 60px; /* Header.css와 동일 */
+    --bg: #f3f8ec;
     --green: #2e7d32;
     --green-dark: #1b5e20;
     --border: #d0d5dd;
@@ -13,7 +14,7 @@
     margin-top: var(--header-height);
     display: grid;
     place-items: center;
-    background: #f0f2f5;
+    background: var(--bg);
     font-family: Arial, sans-serif;
   }
   

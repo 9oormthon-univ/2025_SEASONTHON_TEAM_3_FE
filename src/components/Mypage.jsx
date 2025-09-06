@@ -94,7 +94,7 @@ export default function MyPage() {
     localStorage.setItem("allergies", JSON.stringify(draftAL));
 
     setEditMode(false);
-    alert("프로필/건강 정보가 저장되었습니다.");
+    alert("프로필 및 건강 정보가 저장되었습니다.");
   };
 
   // ✅ 칩 토글 (편집 모드용 초안)

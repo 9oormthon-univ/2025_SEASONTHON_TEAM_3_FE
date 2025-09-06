@@ -19,7 +19,7 @@ html, body { height: 100%; margin: 0; }
     margin-top: var(--header-height);    /* fixed 헤더 피하기 */
     display: grid;
     place-items: center;                 /* 가로·세로 중앙 정렬 */
-    background: #f0f2f5;
+    background: var(--bg);
     font-family: Arial, sans-serif;
   }
   
@@ -142,14 +142,71 @@ html, body { height: 100%; margin: 0; }
     letter-spacing: .2px;
     text-shadow: 0 2px 8px rgba(0,0,0,.35);
   }
+
+  /* === 가로 캐러셀 섹션 === */
+.hsec{
+  max-width: 1100px;
+  margin: 0 auto 28px;
+  padding: 0 16px;
+}
+.hsec-head{
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 4px 0 10px;
+}
+.hsec-title{
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  color: #22313a;
+}
+.hsec-count{
+  font-size: 12px;
+  color: var(--muted, #667085);
+}
+
+/* 카드만 가로 스크롤: 섹션은 고정 */
+.hrow{
+  display: grid;
+  grid-auto-flow: column;            /* 옆으로 흐르게 */
+  grid-auto-columns: 240px;          /* 카드 폭 */
+  gap: 14px;
+  overflow-x: auto;                  /* ✅ 가로 스크롤 */
+  overflow-y: hidden;
+  padding-bottom: 8px;
+  scroll-snap-type: x proximity;     /* 스냅 */
+  overscroll-behavior-inline: contain;
+  -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
+}
+
+/* 스크롤바(선택: 얇게) */
+.hrow::-webkit-scrollbar{ height: 8px; }
+.hrow::-webkit-scrollbar-thumb{
+  background: rgba(0,0,0,.15);
+  border-radius: 999px;
+}
+
+/* 가로 카드 크기 고정 & 스냅 */
+.hcard{
+  width: 240px;
+  height: 300px;
+  scroll-snap-align: start;
+  flex: none;                        /* 늘어나지 않음 */
+  cursor: pointer;
+}
+
+/* 썸네일 높이 통일 (today-* 재사용 중) */
+.today-thumb{ height: 140px; }
+
   
   /* 반응형 최소한 */
-  @media (max-width: 1100px){
+@media (max-width: 1100px){
     .today-grid{ grid-template-columns: repeat(2, 1fr); }
     .collection-grid{ grid-template-columns: repeat(2, 1fr); }
-  }
+}
   @media (max-width: 720px){
     .today-grid{ grid-template-columns: 1fr; }
     .collection-grid{ grid-template-columns: 1fr; }
-  }
+}
   
