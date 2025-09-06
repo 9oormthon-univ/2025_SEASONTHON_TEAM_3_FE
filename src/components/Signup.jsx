@@ -33,8 +33,6 @@ function Signup() {
   function validate(values) {
     const e = {};
     if (!values.username.trim()) e.username = "아이디를 입력하세요.";
-    else if (!usernameRegex.test(values.username))
-      e.username = "아이디는 4~16자의 영문/숫자/_/- 만 가능합니다.";
 
     if (!values.email.trim()) e.email = "이메일을 입력하세요.";
     else if (!emailRegex.test(values.email))
@@ -70,7 +68,7 @@ function Signup() {
   function handleSubmit(e) {
     e.preventDefault();
     if (!isValid) return;
-    // 프론트만: 저장/전송 안 함. 데모 로그만 남김.
+
     console.log("signup payload (frontend only):", {
       username: form.username,
       email: form.email,

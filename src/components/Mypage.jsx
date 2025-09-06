@@ -16,7 +16,6 @@ export default function MyPage() {
           <img className="mp-avatar" src="/images/avatar.png" alt="user" />
           <div>
             <strong className="mp-name">김민지</strong>
-            <div className="mp-role">실버푸드님</div>
           </div>
         </div>
         <nav className="mp-nav">

@@ -45,7 +45,6 @@
   }
   .mp-avatar{ width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
   .mp-name{ font-weight: 800; }
-  .mp-role{ color: var(--muted); font-size: 12px; }
   .mp-nav{ display: grid; gap: 8px; margin-top: 16px; }
   .mp-nav-item{
     text-align: left;
