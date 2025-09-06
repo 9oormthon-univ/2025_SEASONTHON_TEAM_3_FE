@@ -147,6 +147,90 @@
     cursor: pointer;
   }
   .text-btn:hover { text-decoration: underline; }
+
+  .hc-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--hc-text);
+    margin: 0 0 6px;
+  }
+  .hc-subtitle {
+    margin: 0;
+    font-size: 15px;
+    color: var(--hc-muted);
+  }
+  
+  /* 칩 컨테이너 */
+  .hc-chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  
+  /* 칩 기본 */
+  .hc-chip {
+    appearance: none;
+    border: 1px solid var(--hc-border);
+    background: #fff;
+    color: var(--hc-text);
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 15px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: auto;
+    cursor: pointer;
+    box-shadow: var(--hc-shadow);
+    transition: box-shadow .2s ease, background .2s ease, border-color .2s ease,transform .02s ease;
+  }
+  
+  .hc-chip:hover:not(:disabled) {
+    box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 6px 14px rgba(0,0,0,.06);
+  }
+  
+  .hc-chip:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+  
+  .hc-chip:disabled {
+    opacity: .55;
+    cursor: not-allowed;
+  }
+  
+  /* 활성화 */
+  .hc-chip.is-active {
+    background: var(--hc-active);
+    border-color: var(--hc-ring);
+    outline: 3px solid rgba(16,185,129,.12); /* emerald-500 @ 12% */
+  }
+  
+  /* 작은 동그라미 포인트(스샷 느낌) */
+  .hc-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--hc-active-strong);
+    opacity: .85;
+  }
+  
+  /* '없음' 칩은 중립 스타일 */
+  .hc-none .hc-dot { display: none; }
+  .hc-none {
+    background: #fff;
+  }
+  .hc-none.is-active {
+    background: #f9fafb;   /* gray-50 */
+    border-color: var(--hc-border);
+    outline: none;
+  }
+  
+  /* 포커스 접근성 */
+  .hc-chip:focus-visible {
+    outline: 3px solid var(--hc-ring);
+    outline-offset: 2px;
+  }
   
   * { box-sizing: border-box; }
   html, body { height: 100%; }

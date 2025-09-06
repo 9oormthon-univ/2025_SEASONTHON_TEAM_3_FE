@@ -1,6 +1,7 @@
 import React from "react";
 import "./Info.css";
 import { useFavorites } from "./FavoritesContext";
+import { useSearchParams } from "react-router-dom"; // ✅ 추가
 
 function HeartBtn({ on, ...rest }) {
   return (
@@ -15,6 +16,8 @@ function HeartBtn({ on, ...rest }) {
 
 export default function Info() {
   const { isFavorite, toggle } = useFavorites();
+  const [searchParams] = useSearchParams();              // ✅ 추가
+  const targetName = searchParams.get("name") || "";     // ✅ 추가
 
   const snacks = [
     {
@@ -37,51 +40,81 @@ export default function Info() {
       nutrition: { serving: "1회 제공량 (25g)", per100g: { calories: "380kcal", protein: "4g", fat: "10g", carbs: "75g", sugar: "3g", sodium: "80mg" } },
       allergens: ["없음"],
     },
+    // ✅ Find 목록과 이름 매칭되는 항목 추가
+    {
+      id: 103,
+      name: "현미쿠키",
+      brand: "그레인랩",
+      image: "/images/snack-cookie.png",
+      badges: ["저당"],
+      category: "쿠키",
+      nutrition: { serving: "1회 제공량 (30g)", per100g: { calories: "420kcal", protein: "6g", fat: "15g", carbs: "68g", sugar: "6g", sodium: "110mg" } },
+      allergens: ["밀", "우유"],
+    },
+    {
+      id: 104,
+      name: "캐모마일티",
+      brand: "허브하우스",
+      image: "/images/snack-tea.png",
+      badges: ["카페인없음","부드러움"],
+      category: "음료",
+      nutrition: { serving: "1회 제공량 (200ml)", per100g: { calories: "2kcal", protein: "0g", fat: "0g", carbs: "0g", sugar: "0g", sodium: "5mg" } },
+      allergens: ["없음"],
+    },
   ];
+
+  // ✅ 쿼리 name이 있으면 해당 이름만, 없으면 전체
+  const list = targetName
+    ? snacks.filter((s) => s.name === targetName)
+    : snacks;
 
   return (
     <div className="info-page">
-      {snacks.map((s) => (
-        <div key={s.id} className="snack-section">
-          <div className="info-header">
-            <div className="img-wrap">
-              <img src={s.image} alt={s.name} className="info-image" />
-              <HeartBtn
-                on={isFavorite(s.id)}
-                onClick={() => toggle({ id: s.id, name: s.name, brand: s.brand, image: s.image, category: s.category })}
-              />
-            </div>
-            <div className="info-basic">
-              <h1 className="info-name">{s.name}</h1>
-              <p className="info-brand">{s.brand}</p>
-              <div className="badge-list">
-                {s.badges.map((b, i) => (<span key={i} className="badge">{b}</span>))}
+      {list.length === 0 ? (
+        <div className="info-empty">해당 제품 정보를 찾을 수 없습니다.</div>
+      ) : (
+        list.map((s) => (
+          <div key={s.id} className="snack-section">
+            <div className="info-header">
+              <div className="img-wrap">
+                <img src={s.image} alt={s.name} className="info-image" />
+                <HeartBtn
+                  on={isFavorite(s.id)}
+                  onClick={() => toggle({ id: s.id, name: s.name, brand: s.brand, image: s.image, category: s.category })}
+                />
+              </div>
+              <div className="info-basic">
+                <h1 className="info-name">{s.name}</h1>
+                <p className="info-brand">{s.brand}</p>
+                <div className="badge-list">
+                  {s.badges.map((b, i) => (<span key={i} className="badge">{b}</span>))}
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="section">
-            <h2 className="section-title">영양정보</h2>
-            <p className="serving">{s.nutrition.serving}</p>
-            <table className="nutrition-table">
-              <thead><tr><th>항목</th><th>100g 기준</th></tr></thead>
-              <tbody>
-                <tr><td>열량</td><td>{s.nutrition.per100g.calories}</td></tr>
-                <tr><td>단백질</td><td>{s.nutrition.per100g.protein}</td></tr>
-                <tr><td>지방</td><td>{s.nutrition.per100g.fat}</td></tr>
-                <tr><td>탄수화물</td><td>{s.nutrition.per100g.carbs}</td></tr>
-                <tr><td>당류</td><td>{s.nutrition.per100g.sugar}</td></tr>
-                <tr><td>나트륨</td><td>{s.nutrition.per100g.sodium}</td></tr>
-              </tbody>
-            </table>
-          </div>
+            <div className="section">
+              <h2 className="section-title">영양정보</h2>
+              <p className="serving">{s.nutrition.serving}</p>
+              <table className="nutrition-table">
+                <thead><tr><th>항목</th><th>100g 기준</th></tr></thead>
+                <tbody>
+                  <tr><td>열량</td><td>{s.nutrition.per100g.calories}</td></tr>
+                  <tr><td>단백질</td><td>{s.nutrition.per100g.protein}</td></tr>
+                  <tr><td>지방</td><td>{s.nutrition.per100g.fat}</td></tr>
+                  <tr><td>탄수화물</td><td>{s.nutrition.per100g.carbs}</td></tr>
+                  <tr><td>당류</td><td>{s.nutrition.per100g.sugar}</td></tr>
+                  <tr><td>나트륨</td><td>{s.nutrition.per100g.sodium}</td></tr>
+                </tbody>
+              </table>
+            </div>
 
-          <div className="section">
-            <h2 className="section-title">알레르겐</h2>
-            <p className="allergens">{s.allergens.join(", ")}</p>
+            <div className="section">
+              <h2 className="section-title">알레르겐</h2>
+              <p className="allergens">{s.allergens.join(", ")}</p>
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   );
 }

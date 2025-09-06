@@ -19,7 +19,7 @@ function Login() {
           <input
             type="text"
             className="login-input"
-            placeholder="아이디"
+            placeholder="이름"
             autoComplete="username"
             required
           />
