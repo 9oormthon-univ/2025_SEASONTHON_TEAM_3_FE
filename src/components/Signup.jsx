@@ -249,8 +249,8 @@ function Signup() {
           </div>
 
           {/* 알레르기 체크 */}
-          <div className="hc-section">
-            <div className="hc-head">
+          <div>
+            <div>
               <label className="label">알레르기 체크</label>
               <p className="hc-subtitle">가지고 계신 알레르기를 선택하세요. (다중 선택)</p>
             </div>

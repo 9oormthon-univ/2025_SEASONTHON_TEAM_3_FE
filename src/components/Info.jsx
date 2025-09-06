@@ -28,7 +28,7 @@ export default function Info() {
       badges: ["저당", "저염", "부드러움", "카페인없음"],
       category: "바",
       nutrition: { serving: "1회 제공량 (30g)", per100g: { calories: "450kcal", protein: "8g", fat: "20g", carbs: "60g", sugar: "5g", sodium: "120mg" } },
-      allergens: ["우유", "대두", "밀"],
+
     },
     {
       id: 102,
@@ -38,7 +38,7 @@ export default function Info() {
       badges: ["저당", "글루텐프리"],
       category: "칩",
       nutrition: { serving: "1회 제공량 (25g)", per100g: { calories: "380kcal", protein: "4g", fat: "10g", carbs: "75g", sugar: "3g", sodium: "80mg" } },
-      allergens: ["없음"],
+
     },
     // ✅ Find 목록과 이름 매칭되는 항목 추가
     {
@@ -49,7 +49,7 @@ export default function Info() {
       badges: ["저당"],
       category: "쿠키",
       nutrition: { serving: "1회 제공량 (30g)", per100g: { calories: "420kcal", protein: "6g", fat: "15g", carbs: "68g", sugar: "6g", sodium: "110mg" } },
-      allergens: ["밀", "우유"],
+
     },
     {
       id: 104,
@@ -106,12 +106,7 @@ export default function Info() {
                   <tr><td>나트륨</td><td>{s.nutrition.per100g.sodium}</td></tr>
                 </tbody>
               </table>
-            </div>
-
-            <div className="section">
-              <h2 className="section-title">알레르겐</h2>
-              <p className="allergens">{s.allergens.join(", ")}</p>
-            </div>
+            </div> 
           </div>
         ))
       )}

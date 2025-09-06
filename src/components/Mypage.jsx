@@ -15,11 +15,6 @@ export default function MyPage() {
     const email = localStorage.getItem("signup_email") || "minji.kim@example.com";
     setProfile({ username, email });
   }, []);
-  const handleSaveProfile = () => {
-    localStorage.setItem("signup_username", profile.username);
-    localStorage.setItem("signup_email", profile.email);
-    alert("프로필 정보가 저장되었습니다.");
-  };
 
   // ✅ 건강상태/알레르기 (표시용 라벨/순서)
   const HEALTH_ITEMS = [
@@ -85,13 +80,21 @@ export default function MyPage() {
   const cancelEdit = () => {
     setEditMode(false);
   };
+
+  // ✅ 저장: 프로필 + 건강정보 한 번에
   const saveEdit = () => {
+    // 1) 프로필 저장
+    localStorage.setItem("signup_username", profile.username);
+    localStorage.setItem("signup_email", profile.email);
+
+    // 2) 건강정보 저장
     setHealthConcerns(draftHC);
     setAllergies(draftAL);
     localStorage.setItem("healthConcerns", JSON.stringify(draftHC));
     localStorage.setItem("allergies", JSON.stringify(draftAL));
+
     setEditMode(false);
-    alert("건강 정보가 저장되었습니다.");
+    alert("프로필/건강 정보가 저장되었습니다.");
   };
 
   // ✅ 칩 토글 (편집 모드용 초안)
@@ -109,7 +112,7 @@ export default function MyPage() {
       {/* 사이드바 */}
       <aside className="mp-sidebar">
         <div className="mp-user">
-          <img className="mp-avatar" src="/images/avatar.png" alt="user" />
+          <img className="mp-avatar" src="silver-snack-logo.png" alt="user" />
           <div>
             <strong className="mp-name">{profile.username || "사용자"}</strong>
           </div>
@@ -175,12 +178,34 @@ export default function MyPage() {
         {tab === "profile" && (
           <section className="mp-card">
             <h2 className="mp-subtitle" style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              건강 정보
-              {!editMode ? (
-                <button type="button" className="btn-outline" onClick={startEdit}>건강정보 편집</button>
+            {!editMode ? (
+                <button type="button" className="btn-outline" onClick={startEdit}>회원 정보 수정</button>
               ) : (
                 <span />
-              )}
+            )}
+            </h2>
+            {/* 프로필(이름/이메일) — 저장은 하단 '저장' 버튼에서 함께 처리 */}
+            <form className="mp-form" style={{ marginTop: 24 }} onSubmit={(e)=>e.preventDefault()}>
+              <div className="field">
+                <label>이름</label>
+                <input
+                  type="text"
+                  value={profile.username}
+                  onChange={(e)=>setProfile(p=>({...p, username: e.target.value}))}
+                />
+              </div>
+              <div className="field">
+                <label>이메일</label>
+                <input
+                  type="email"
+                  value={profile.email}
+                  onChange={(e)=>setProfile(p=>({...p, email: e.target.value}))}
+                />
+              </div>
+            </form>
+
+            <h2 className="mp-title" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", }}>
+              건강 정보
             </h2>
 
             {/* ✅ 보기 모드 */}
@@ -188,7 +213,7 @@ export default function MyPage() {
               <>
                 <div className="hc-section">
                   <div className="hc-head">
-                    <div className="label">건강상태</div>
+                    <div className="label" style={{padding: "0.5rem"}}>건강상태</div>
                   </div>
                   <div className="hc-chip-row">
                     {hcSorted.length > 0 ? (
@@ -206,7 +231,7 @@ export default function MyPage() {
 
                 <div className="hc-section" style={{ marginTop: 12 }}>
                   <div className="hc-head">
-                    <div className="label">알레르기</div>
+                    <div className="label" style={{padding: "0.5rem"}}>알레르기</div>
                   </div>
                   <div className="hc-chip-row">
                     {alSorted.length > 0 ? (
@@ -223,7 +248,7 @@ export default function MyPage() {
                 </div>
               </>
             )}
-
+            
             {/* ✅ 편집 모드 */}
             {editMode && (
               <>
@@ -298,31 +323,6 @@ export default function MyPage() {
                 </div>
               </>
             )}
-
-            {/* 기존 회원정보 폼 */}
-            <form className="mp-form" style={{ marginTop: 24 }} onSubmit={(e)=>e.preventDefault()}>
-              <div className="field">
-                <label>이름</label>
-                <input
-                  type="text"
-                  value={profile.username}
-                  onChange={(e)=>setProfile(p=>({...p, username: e.target.value}))}
-                />
-              </div>
-              <div className="field">
-                <label>이메일</label>
-                <input
-                  type="email"
-                  value={profile.email}
-                  onChange={(e)=>setProfile(p=>({...p, email: e.target.value}))}
-                />
-              </div>
-              <div className="form-actions">
-                <button type="button" className="btn-primary" onClick={handleSaveProfile}>
-                  회원 정보 저장
-                </button>
-              </div>
-            </form>
           </section>
         )}
 

@@ -108,9 +108,8 @@
 }
 .nutrition-table th { background: #f9fafb; }
 
-.allergens { font-size: 0.95rem; color: #d14343; }
-
 .img-wrap{ position: relative; display: inline-block; }
+
 .fav-float{
   position: absolute; top: 8px; left: 8px;
   width: 32px; height: 32px; border-radius: 999px;
@@ -120,6 +119,7 @@
   backdrop-filter: blur(2px);
   cursor: pointer;
 }
+
 .fav-float.on{
   border-color: rgba(229,57,53,.6);
   background: rgba(229,57,53,.12);

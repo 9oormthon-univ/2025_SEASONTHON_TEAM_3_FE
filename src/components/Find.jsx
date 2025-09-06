@@ -47,7 +47,7 @@ function Find() {
     "면류": ["면류"],
   };
 
-  const badgeOptions = ["저당", "저염", "부드러움", "카페인없음", "글루텐프리"];
+  const badgeOptions = ["저당", "저염", "부드러움", "고단백", "고식이섬유", "카페인없음", "간편섭취", "영양보충"];
 
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("전체");

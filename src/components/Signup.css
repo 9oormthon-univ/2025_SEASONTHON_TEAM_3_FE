@@ -71,25 +71,7 @@
     cursor: pointer;
   }
   .ghost-btn:hover { background: #eef2f7; }
-  
-  /* 비밀번호 강도 막대 (프론트 전용 시각화) */
-  .pw-meter {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-    margin-top: -0.3rem;
-  }
-  .pw-meter span {
-    height: 6px;
-    border-radius: 6px;
-    background: #e5e7eb;
-  }
-  .pw-meter.s-0 span:nth-child(n) { background: #e5e7eb; }
-  .pw-meter.s-1 span:nth-child(-n+1) { background: #f97316; }
-  .pw-meter.s-2 span:nth-child(-n+2) { background: #f59e0b; }
-  .pw-meter.s-3 span:nth-child(-n+3) { background: #22c55e; }
-  .pw-meter.s-4 span:nth-child(-n+4) { background: #16a34a; }
-  
+
   .pw-hint {
     margin: -0.2rem 0 0.2rem 0;
     font-size: 0.85rem;
@@ -148,43 +130,50 @@
   }
   .text-btn:hover { text-decoration: underline; }
 
-  .hc-title {
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--hc-text);
-    margin: 0 0 6px;
-  }
   .hc-subtitle {
     margin: 0;
     font-size: 15px;
     color: var(--hc-muted);
+    padding: 0.5rem;
   }
   
   /* 칩 컨테이너 */
   .hc-chip-row {
-    display: flex;
+    display: inline-flex;
     flex-wrap: wrap;
     gap: 12px;
+    align-items: center;
+    width: auto;
   }
   
   /* 칩 기본 */
   .hc-chip {
     appearance: none;
+    -webkit-appearance: none;
     border: 1px solid var(--hc-border);
     background: #fff;
     color: var(--hc-text);
-    padding: 10px 18px;
+    padding: 10px 16px;
     border-radius: 999px;
     font-size: 15px;
     line-height: 1;
+  
+    /* 핵심 */
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    width: auto;
+    width: auto !important;   /* 전역 button {width:100%} 무력화 */
+    min-width: unset;
+    flex: 0 0 auto;           /* flex 컨테이너에서 늘어나지 않음 */
+    white-space: nowrap;      /* 줄바꿈 방지 → 내용 기준 너비 */
+  
     cursor: pointer;
     box-shadow: var(--hc-shadow);
-    transition: box-shadow .2s ease, background .2s ease, border-color .2s ease,transform .02s ease;
+    transition: box-shadow .2s ease, background .2s ease, border-color .2s ease,
+                transform .02s ease;
   }
+  
   
   .hc-chip:hover:not(:disabled) {
     box-shadow: 0 1px 2px rgba(0,0,0,.06), 0 6px 14px rgba(0,0,0,.06);
@@ -231,6 +220,8 @@
     outline: 3px solid var(--hc-ring);
     outline-offset: 2px;
   }
+
+  
   
   * { box-sizing: border-box; }
   html, body { height: 100%; }
