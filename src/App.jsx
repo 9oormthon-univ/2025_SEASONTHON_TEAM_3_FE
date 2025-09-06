@@ -17,7 +17,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/find" element={<Find />} />
-          <Route path="/info" element={<Info />} />
           <Route path="/about" element={<h1>서비스소개</h1>} />
           <Route path="/mypage" element={<Mypage />} />
           <Route path="/login" element={<Login />} />

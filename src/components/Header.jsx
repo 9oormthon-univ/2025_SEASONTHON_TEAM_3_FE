@@ -10,7 +10,6 @@ function Header() {
       <nav className="nav-list">
         <ul className="nav-list a">
           <li><a href="/find">간식찾기</a></li>
-          <li><a href="/info">간식정보</a></li>
           <li><a href="/about">서비스소개</a></li>
           <li><a href="/mypage">마이페이지</a></li>
         </ul>

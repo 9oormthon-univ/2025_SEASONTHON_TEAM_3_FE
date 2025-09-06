@@ -36,20 +36,7 @@ html, body { height: 100%; margin: 0; }
   line-height: 1.15;
 }  
 
-/* 섹션 시작점 더 끌어올리기 */
-.section-title{
 
-  margin: 10px auto 6px;    /* 기존 22px auto 10px → 10px auto 6px */
-  padding: 0 20px;
-  font-size: 17px;
-}
-
-/* 오늘의 간식 래퍼 위 여백 최소화 */
-.today{
-  max-width: var(--container);
-  margin: 0 auto;
-  padding: 0 20px 6px;      /* top 패딩 0으로 */
-}
 
 .today-grid{
   display: grid;
@@ -59,6 +46,7 @@ html, body { height: 100%; margin: 0; }
 .today-card{
   display: grid;
   grid-template-rows: 160px auto;
+  width: 300px;
   border-radius: 16px;
   overflow: hidden;
   background: #fff;
