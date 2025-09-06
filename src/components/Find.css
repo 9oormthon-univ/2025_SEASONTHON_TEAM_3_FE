@@ -64,6 +64,19 @@ html, body { height: 100%; margin: 0; }
   box-shadow: 0 0 0 3px rgba(46,125,50,.18);
 }
 
+/* 검색 버튼 */
+.search-btn{
+  height: 45px;
+  padding: 0 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, #2e7d32, #1b5e20);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+
 /* 카테고리 칩 */
 .chip-row{
   display: flex;

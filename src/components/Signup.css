@@ -10,8 +10,8 @@
   .page {
     grid-column: 1 / -1 !important;
     width: 100vw;
+    padding-top: calc(var(--header-height) + 16px);
     min-height: calc(100vh - var(--header-height));
-    margin-top: var(--header-height);
     display: grid;
     place-items: center;
     background: var(--bg);
