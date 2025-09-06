@@ -419,16 +419,16 @@ const saveEdit = async () => {
             ) : (
               <div className="fav-grid">
                 {favorites.map((s) => (
-                  <article className="fav-card" key={s.id}>
-                    <div className="fav-thumb" onClick={() => navigate(`/info?id=${s.id}`)}>
-                      <img src={s.image} alt={s.name} onError={(e)=>{ e.currentTarget.style.visibility="hidden"; }} />
+                  <article className="fav-card" key={s.snackId}>
+                    <div className="fav-thumb" onClick={() => navigate(`/info?id=${s.snackId}`)}>
+                      <img src={s.imageUrl || "/images/silver-snack-logo.png"} alt={s.name} onError={(e)=>{ e.currentTarget.style.visibility="hidden"; }} />
                     </div>
                     <div className="fav-body">
                       <h3 className="fav-name">{s.name}</h3>
-                      <p className="fav-brand">{s.brand}</p>
+                      <p className="fav-brand">{s.manufacturer}</p>
                       <div className="fav-meta">
-                        <span className="fav-cat">{s.category}</span>
-                        <button className="btn-outline" onClick={() => remove(s.id)}>삭제</button>
+                        <span className="fav-cat">{s.snackCategory}</span>
+                        <button className="btn-outline" onClick={() => remove(s.snackId)}>삭제</button>
                       </div>
                     </div>
                   </article>
