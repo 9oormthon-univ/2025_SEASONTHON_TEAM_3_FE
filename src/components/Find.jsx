@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import "./Find.css";
 import { useFavorites } from "./FavoritesContext";
 import { useNavigate } from "react-router-dom";
+import Loading from "./Loading";
 
 function Heart({ on, ...rest }) {
   return (
@@ -26,89 +27,149 @@ function Heart({ on, ...rest }) {
   );
 }
 
-function Find() {
+const CATEGORIES = ["전체", "영양식품", "즉석식품", "곡물가공품", "음료", "유제품", "과자,떡,빵", "면류"];
+const CAT_INFO = {
+  "영양식품": "영양 보충식, 환자식, 노인 맞춤 영양 간식 등 건강 보조 성격의 식품들.",
+  "즉석식품": "간편하게 조리·섭취할 수 있는 죽, 즉석국, 레토르트 식품 등.",
+  "곡물가공품": "곡류 가공품, 오트밀, 현미 등 곡물 기반 가공식품.",
+  "음료": "건강 음료, 곡물 음료, 두유 등 마실 수 있는 형태.",
+  "유제품": "치즈, 우유, 요구르트 등 낙농 기반 제품.",
+  "과자,떡,빵": "전통 떡, 빵, 크래커 같은 간식류.",
+  "면류": "국수, 보리국수 같은 면 종류.",
+};
+const BADGE_OPTIONS = ["저당", "저염", "부드러움", "고단백", "고식이섬유", "카페인없음", "간편섭취", "영양보충"];
+
+// ✅ 3×2 = 6 고정
+const PAGE_SIZE = 6;
+
+// 백엔드 베이스
+const API_BASE =
+  (import.meta.env.VITE_API_BASE && import.meta.env.VITE_API_BASE.trim()) ||
+  (location.hostname === "localhost" ? "http://3.35.209.210:8080" : "");
+const LIST_URL = `${API_BASE}/api/snacks`;
+
+export default function Find() {
   const navigate = useNavigate();
+  const { isFavorite, toggle } = useFavorites();
+  const abortRef = useRef(null);
 
-  // 데모 데이터
-  const snacks = [
-    { id: 1, name: "오곡바",   brand: "실버스낵",  image: "silver-snack-logo.png", category: "바",   badges: ["저당","저염","부드러움","카페인없음"] },
-    { id: 2, name: "고구마칩", brand: "헬시푸드",  image: "silver-snack-logo.png", category: "칩",   badges: ["저당","글루텐프리"] },
-    { id: 3, name: "현미쿠키", brand: "그레인랩",  image: "silver-snack-logo.png", category: "쿠키", badges: ["저당"] },
-    { id: 4, name: "캐모마일티", brand: "허브하우스", image: "silver-snack-logo.png", category: "음료", badges: ["카페인없음","부드러움"] },
-  ];
-
-  // 카테고리 & 설명 (UI 표시용)
-  const categories = ["전체", "곡물가공품", "즉석식품", "건강 보충식", "음료", "유제품", "과자류·빵류·떡", "면류"];
-  const catInfo = {
-    "건강 보충식": { desc: "영양 보충식, 환자식, 노인 맞춤 영양 간식 등 건강 보조 성격의 식품들." },
-    "즉석식품": { desc: "간편하게 조리·섭취할 수 있는 죽, 즉석국, 레토르트 식품 등." },
-    "곡물가공품": { desc: "곡류 가공품, 오트밀, 현미 등 곡물 기반 가공식품." },
-    "음료": { desc: "건강 음료, 곡물 음료, 두유 등 마실 수 있는 형태." },
-    "유제품": { desc: "치즈, 우유, 요구르트 등 낙농 기반 제품." },
-    "과자류·빵류·떡": { desc: "전통 떡, 빵, 크래커 같은 간식류." },
-    "면류": { desc: "국수, 보리국수 같은 면 종류." },
-  };
-
-  // 실제 필터에 쓸 매핑
-  const filterMap = {
-    "전체": null,
-    "건강 보충식": ["건강보충식", "영양식품"],
-    "즉석식품": ["즉석식품"],
-    "곡물가공품": ["곡물가공품", "농산가공식품류"],
-    "음료": ["음료"],
-    "유제품": ["유제품"],
-    "과자류·빵류·떡": ["과자,떡,빵", "바", "칩", "쿠키", "빵", "과자", "떡"],
-    "면류": ["면류"],
-  };
-
-  const badgeOptions = ["저당", "저염", "부드러움", "고단백", "고식이섬유", "카페인없음", "간편섭취", "영양보충"];
-
-  // ✅ 적용된(Committed) 상태 — 실제 필터링에 사용
+  // 실제 적용 상태
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("전체");
-  const [selectedBadges, setSelectedBadges] = useState([]);
+  const [badges, setBadges] = useState([]);
+  const [page, setPage] = useState(0);
 
-  // ✅ 초안(Draft) 상태 — UI에서 선택만 하고, 검색 버튼 클릭 시에만 위로 반영
+  // 드래프트
   const [qDraft, setQDraft] = useState("");
   const [catDraft, setCatDraft] = useState("전체");
-  const [selectedBadgesDraft, setSelectedBadgesDraft] = useState([]);
+  const [badgesDraft, setBadgesDraft] = useState([]);
 
-  // 드래프트에서 배지 토글
-  function toggleBadgeDraft(b) {
-    setSelectedBadgesDraft((prev) =>
-      prev.includes(b) ? prev.filter((x) => x !== b) : [...prev, b]
-    );
-  }
+  // 목록
+  const [items, setItems] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalElements, setTotalElements] = useState(0);
 
-  // ✅ 검색 버튼: 드래프트 → 적용
-  function applySearch() {
-    setQ(qDraft);
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState("");
+
+  const toggleBadgeDraft = (b) =>
+    setBadgesDraft((prev) => (prev.includes(b) ? prev.filter((x) => x !== b) : [...prev, b]));
+
+  const applySearch = () => {
+    setQ(qDraft.trim());
     setCat(catDraft);
-    setSelectedBadges(selectedBadgesDraft);
-  }
+    setBadges(badgesDraft.slice());
+    setPage(0);
+  };
 
-  // (선택) 전체 초기화: 드래프트/적용 상태 모두 리셋
-  function resetAll() {
+  const resetAll = () => {
     setQ(""); setQDraft("");
     setCat("전체"); setCatDraft("전체");
-    setSelectedBadges([]); setSelectedBadgesDraft([]);
-  }
+    setBadges([]); setBadgesDraft([]);
+    setPage(0);
+  };
 
-  // 실제 필터링은 "적용된 상태"만 사용
-  const filtered = useMemo(() => {
-    const text = q.trim().toLowerCase();
-    return snacks.filter((s) => {
-      const keys = filterMap[cat];
-      const byCat = !keys ? true : keys.includes(s.category);
-      const byText = !text || s.name.toLowerCase().includes(text) || s.brand.toLowerCase().includes(text);
-      const byBadges = selectedBadges.length === 0 || selectedBadges.every((b) => s.badges.includes(b));
-      return byCat && byText && byBadges;
-    });
-  }, [q, cat, selectedBadges]);
+  // ====== API 호출 (size=6 강제, 6개 초과시 slice) ======
+  useEffect(() => {
+    if (abortRef.current) abortRef.current.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
 
-  const currentInfo = catInfo[catDraft]; // 설명은 드래프트 기준으로 즉시 표시
+    setLoading(true);
+    setErr("");
 
-  const { isFavorite, toggle } = useFavorites();
+    const params = new URLSearchParams();
+    params.set("page", String(page));
+    params.set("size", String(PAGE_SIZE)); // ← 6
+    if (q) params.set("keyword", q);
+    if (cat && cat !== "전체") params.set("category", cat);
+    (badges || []).forEach((h) => params.append("hashtags", h));
+
+    const url = `${LIST_URL}?${params.toString()}`;
+    // console.log("[Find] fetch:", url);
+
+    const pickPage = (j) => {
+      if (!j) return { content: [], totalPages: 0, totalElements: 0 };
+      if (j.result?.content) return j.result;
+      if (j.content) return j;
+      if (j.data?.content) return j.data;
+      return { content: [], totalPages: 0, totalElements: 0 };
+    };
+
+    fetch(url, { signal: controller.signal })
+      .then(async (res) => {
+        const text = await res.text();
+        let json = null; try { json = text ? JSON.parse(text) : null; } catch {}
+        if (!res.ok) throw new Error(json?.message || json?.errorCode || `HTTP ${res.status}`);
+        if (json && "success" in json && json.success === false) {
+          throw new Error(json?.message || json?.errorCode || "요청 실패");
+        }
+        const pg = pickPage(json);
+        const content = Array.isArray(pg.content) ? pg.content : [];
+
+        const mapped = content.slice(0, PAGE_SIZE).map((it) => ({
+          id: it.id,
+          name: it.name,
+          brand: it.manufacturer,
+          image: it.imageUrl || "/images/silver-snack-logo.png",
+          category: it.snackCategory,
+          badges: Array.isArray(it.hashtags) ? it.hashtags : [],
+        }));
+
+        setItems(mapped);
+        setTotalPages(pg.totalPages ?? 0);
+        setTotalElements(pg.totalElements ?? mapped.length);
+      })
+      .catch((e) => {
+        if (e.name === "AbortError") return;
+        setErr(e.message || "목록을 불러오지 못했습니다.");
+        setItems([]);
+        setTotalPages(0);
+        setTotalElements(0);
+      })
+      .finally(() => setLoading(false));
+
+    return () => controller.abort();
+  }, [q, cat, badges, page]);
+
+  const resultText = useMemo(() => {
+    if (!totalElements) return "결과 0개";
+    const start = page * PAGE_SIZE + 1;
+    const end = Math.min((page + 1) * PAGE_SIZE, totalElements);
+    return `결과 ${totalElements}개 ( ${start}–${end} )`;
+  }, [page, totalElements]);
+
+  const onThumbError = (e) => {
+    const img = e.currentTarget;
+    if (img.dataset.fallback === "1") return;
+    img.dataset.fallback = "1";
+    img.src = "/images/silver-snack-logo.png";
+    img.style.objectFit = "contain";
+    img.style.padding = "16px";
+    img.style.background = "#fff";
+  };
+
+  const currentInfo = catDraft !== "전체" ? CAT_INFO[catDraft] : null;
 
   return (
     <div className="find-page">
@@ -116,24 +177,22 @@ function Find() {
         <div className="toolbar-inner">
           <h1 className="find-title">간식찾기</h1>
 
-          {/* 검색어 입력 (Enter로도 검색 적용) */}
           <div className="search-row">
             <input
               className="search-input"
               type="text"
-              placeholder="간식 이름이나 브랜드로 검색"
+              placeholder="간식 이름이나 제조사로 검색"
               value={qDraft}
               onChange={(e) => setQDraft(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") applySearch(); }}
               aria-label="간식 검색"
             />
-                        <button className="search-btn" onClick={applySearch}>검색</button>
+            <button className="reset-btn" onClick={applySearch}>검색</button>
+            <button className="reset-btn" onClick={resetAll}>초기화</button>
           </div>
-          
 
-          {/* 카테고리 — 드래프트만 변경 */}
           <div className="chip-row" role="tablist" aria-label="카테고리">
-            {categories.map((c) => (
+            {CATEGORIES.map((c) => (
               <button
                 key={c}
                 className={`chip ${catDraft === c ? "active" : ""}`}
@@ -146,86 +205,82 @@ function Find() {
             ))}
           </div>
 
-          {/* 카테고리 설명(선택 시 즉시 표시) */}
-          {catDraft !== "전체" && currentInfo && (
-            <div className="cat-desc" role="note" aria-live="polite" style={{ marginTop: 10, fontSize: 14, color: "var(--muted,#6b7280)" }}>
-              <div style={{ marginTop: 4 }}>{currentInfo.desc}</div>
+          {currentInfo && (
+            <div className="cat-desc" role="note" aria-live="polite">
+              {currentInfo}
             </div>
           )}
 
-          {/* 배지 필터 — 드래프트만 변경 */}
-          <div className="badge-filter" aria-label="특징 필터" style={{ marginTop: currentInfo ? 10 : 16 }}>
-            {badgeOptions.map((b) => (
+          <div className="badge-filter" aria-label="특징 필터">
+            {BADGE_OPTIONS.map((b) => (
               <label key={b} className="badge-check">
                 <input
                   type="checkbox"
-                  checked={selectedBadgesDraft.includes(b)}
+                  checked={badgesDraft.includes(b)}
                   onChange={() => toggleBadgeDraft(b)}
                 />
                 <span>{b}</span>
               </label>
             ))}
-
-            {selectedBadgesDraft.length > 0 && (
-              <button className="reset-btn" onClick={() => setSelectedBadgesDraft([])}>
-                선택 초기화
-              </button>
+            {badgesDraft.length > 0 && (
+              <button className="reset-btn" onClick={() => setBadgesDraft([])}>선택 초기화</button>
             )}
-
-            {/* 적용된 결과 개수(적용 상태 기준) */}
-            <span className="result-count">결과 {filtered.length}개</span>
+            <span className="result-count">{resultText}</span>
           </div>
         </div>
       </div>
 
-      <div className="grid">
-        {filtered.map((s) => (
-          <article
-            key={s.id}
-            className="card"
-            role="button"
-            tabIndex={0}
-            onClick={() => navigate(`/info?name=${encodeURIComponent(s.name)}`)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                navigate(`/info?name=${encodeURIComponent(s.name)}`);
-              }
-            }}
-          >
-            {/* 카드 상단 이미지 박스 */}
-            <div className="thumb">
-              <img
-                src={s.image}
-                alt={s.name}
-                onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }}
-              />
-              <Heart
-                on={isFavorite(s.id)}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggle({ id: s.id, name: s.name, brand: s.brand, image: s.image, category: s.category });
-                }}
-              />
-            </div>
+      {loading ? (
+        <div style={{ padding: 24 }}><Loading variant="dots" text="불러오는 중..." /></div>
+      ) : err ? (
+        <div className="empty">오류: {err}</div>
+      ) : (
+        <>
+          {/* ✅ 3열 그리드 → 한 페이지에 6개면 2줄로 정확히 렌더 */}
+          <div className="grid grid-3">
+            {items.map((s) => (
+              <article
+                key={s.id}
+                className="card"
+                role="button"
+                tabIndex={0}
+                onClick={() => navigate(`/info?id=${encodeURIComponent(s.id)}`)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); navigate(`/info?id=${encodeURIComponent(s.id)}`); } }}
+              >
+                <div className="thumb">
+                  <img src={s.image} alt={s.name} onError={onThumbError} />
+                  <Heart
+                    on={isFavorite(s.id)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggle({ id: s.id, name: s.name, brand: s.brand, image: s.image, category: s.category });
+                    }}
+                  />
+                </div>
+                <div className="card-body">
+                  <h3 className="snack-name" title={s.name}>{s.name}</h3>
+                  <p className="snack-brand" title={s.brand}>{s.brand}</p>
+                  <div className="badge-list">
+                    {s.badges.slice(0, 3).map((b) => (<span key={b} className="badge">{b}</span>))}
+                    {s.badges.length > 3 && <span className="badge more">+{s.badges.length - 3}</span>}
+                  </div>
+                  <span className="cat-pill">{s.category}</span>
+                </div>
+              </article>
+            ))}
+          </div>
 
-            {/* 본문 */}
-            <div className="card-body">
-              <h3 className="snack-name" title={s.name}>{s.name}</h3>
-              <p className="snack-brand" title={s.brand}>{s.brand}</p>
-              <div className="badge-list">
-                {s.badges.slice(0, 3).map((b) => (<span key={b} className="badge">{b}</span>))}
-                {s.badges.length > 3 && <span className="badge more">+{s.badges.length - 3}</span>}
-              </div>
-              <span className="cat-pill">{s.category}</span>
+          {totalPages > 1 && (
+            <div className="pager">
+              <button className="reset-btn" disabled={page <= 0} onClick={() => setPage((p) => Math.max(0, p - 1))}>이전</button>
+              <span className="pager-info">{page + 1} / {totalPages}</span>
+              <button className="reset-btn" disabled={page + 1 >= totalPages} onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}>다음</button>
             </div>
-          </article>
-        ))}
-      </div>
+          )}
 
-      {filtered.length === 0 && <div className="empty">검색 결과가 없습니다.</div>}
+          {items.length === 0 && <div className="empty">검색 결과가 없습니다.</div>}
+        </>
+      )}
     </div>
   );
 }
-
-export default Find;
