@@ -8,14 +8,16 @@
 .info-page {
   grid-column: 1 / -1 !important;
   width: 100vw;
-  min-height: calc(100vh - var(--header-height));
-  margin-top: var(--header-height);
+  min-height: 100vh;
+  margin-top: calc(var(--header-height) + 16px);
   display: flex;
   justify-content: center;   /* ✅ 가운데 정렬 */
   align-items: flex-start;   /* ✅ 위쪽부터 시작 */
   padding: 24px;             /* ✅ 여백 */
-  background: #f0f2f5;
+  background: #ffffff;
   font-family: Arial, sans-serif;
+
+  
 }
 
 /* 필요 시 여러 개일 때 2열 그리드(현재는 1개만 보이게 됨) */

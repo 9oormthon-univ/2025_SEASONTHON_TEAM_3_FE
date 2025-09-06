@@ -8,7 +8,7 @@
     --border: #e6efdd;
   }
   
-html, body { height: 100%; margin: 0; }
+html, body { height: 100%; margin: 0, var(--bg); }
   * { box-sizing: border-box; }
   
 .home-page{
@@ -16,7 +16,8 @@ html, body { height: 100%; margin: 0; }
     background: var(--bg);
     grid-column: 1 / -1 !important;
     width: 100vw;
-    margin-top: var(--header-height);    /* fixed 헤더 피하기 */
+    min-height: calc(100vh - var(--header-height));
+    margin-top: 300px;/* fixed 헤더 피하기 */
     display: grid;
     place-items: center;                 /* 가로·세로 중앙 정렬 */
     background: var(--bg);
@@ -92,56 +93,6 @@ html, body { height: 100%; margin: 0; }
   border-radius: 999px;
   font-weight: 700;
 }
-  
-  /* 컬렉션 그리드 (3×2) */
-  .collections{
-    max-width: var(--container);
-    margin: 18px auto 40px;
-    padding: 0 20px 20px;
-  }
-  .collection-grid{
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    gap: 22px;
-  }
-  .collection-card{
-    position: relative;
-    height: 150px;
-    width: 150px;
-    align-items: center;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    background: #0f1714;
-    padding: 0;
-    cursor: pointer;
-  }
-  .collection-img{
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scale(1.02);
-    transition: transform .3s ease, filter .3s ease;
-    filter: saturate(.9) brightness(.9);
-  }
-  .collection-card:hover .collection-img{
-    transform: scale(1.06);
-    filter: saturate(1) brightness(1);
-  }
-  .collection-overlay{
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(180deg, rgba(6,19,9,0.25) 30%, rgba(6,19,9,0.6) 75%);
-  }
-  .collection-label{
-    position: absolute;
-    left: 14px;
-    bottom: 12px;
-    color: #ffffff;
-    font-weight: 800;
-    letter-spacing: .2px;
-    text-shadow: 0 2px 8px rgba(0,0,0,.35);
-  }
 
   /* === 가로 캐러셀 섹션 === */
 .hsec{
