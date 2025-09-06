@@ -90,7 +90,6 @@ html, body { height: 100%; margin: 0; }
   color: #fff;
   border-color: var(--green);
 }
-
 /* 배지 필터 */
 .badge-filter{
   display: flex;
@@ -144,8 +143,7 @@ html, body { height: 100%; margin: 0; }
   border-radius: 14px;
   overflow: hidden;
 }
-
-/* 썸네일 높이도 고정 */
+/* 썸네일 높이 고정 */
 .thumb{
   height: 160px;
   background: #f8fafc;

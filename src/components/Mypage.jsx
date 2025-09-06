@@ -20,11 +20,19 @@ export default function MyPage() {
           </div>
         </div>
         <nav className="mp-nav">
-          <button className="mp-nav-item">홈</button>
-          <button className="mp-nav-item">간식</button>
-          <button className="mp-nav-item">구독</button>
-          <button className="mp-nav-item">설정</button>
-          <button className="mp-nav-item active">내 실버푸드</button>
+          <button
+              className={`mp-nav-item ${tab === "favs" ? "active" : ""}`}
+              onClick={() => setTab("favs")}
+
+            >
+              찜한 간식
+          </button>
+          <button
+              className={`mp-nav-item ${tab === "profile" ? "active" : ""}`}
+              onClick={() => setTab("profile")}
+            >
+              회원 정보 수정
+            </button>
         </nav>
       </aside>
 
@@ -32,20 +40,6 @@ export default function MyPage() {
       <main className="mp-content">
         <header className="mp-header">
           <h1>내 실버푸드</h1>
-          <div className="mp-tabs">
-            <button
-              className={`mp-tab ${tab === "profile" ? "active" : ""}`}
-              onClick={() => setTab("profile")}
-            >
-              회원 정보 수정
-            </button>
-            <button
-              className={`mp-tab ${tab === "favs" ? "active" : ""}`}
-              onClick={() => setTab("favs")}
-            >
-              찜한 간식
-            </button>
-          </div>
         </header>
 
         {tab === "profile" && (
@@ -62,18 +56,6 @@ export default function MyPage() {
               <div className="field">
                 <label>휴대폰 번호</label>
                 <input type="tel" placeholder="010-1234-5678" />
-              </div>
-              <div className="field">
-                <label>주소</label>
-                <input type="text" placeholder="서울시 강남구 테헤란로" />
-              </div>
-              <div className="field">
-                <label>상세 주소</label>
-                <input type="text" placeholder="123-45, 호숫길" />
-              </div>
-              <div className="field">
-                <label>우편번호</label>
-                <input type="text" placeholder="06236" />
               </div>
               <div className="field">
                 <label>생년월일</label>
