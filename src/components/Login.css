@@ -1,0 +1,90 @@
+:root {
+    /* Header.css의 높이와 반드시 동일하게 */
+    --header-height: 60px;
+  }
+  
+  /* 혹시 상위 레이아웃이 CSS Grid라도 전체 폭으로 뽑아 쓰게 강제 */
+  .page {
+    grid-column: 1 / -1 !important;     /* 부모 그리드 컬럼 전부 차지 */
+    width: 100vw;                        /* 뷰포트 전체 가로 */
+    min-height: calc(100vh - var(--header-height));  /* 헤더 제외 높이 */
+    margin-top: var(--header-height);    /* fixed 헤더 피하기 */
+    display: grid;
+    place-items: center;                 /* 가로·세로 중앙 정렬 */
+    background: #f0f2f5;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* 중앙 컨텐츠 폭 제한만 두고 카드 박스는 제거 */
+  .wrapper {
+    width: min(420px, 92vw);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  /* 제목 */
+  .login-title {
+    margin-bottom: 2rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #2e7d32;
+    text-align: left;                    /* 필요하면 center로 */
+  }
+  
+  /* 폼: 줄바꿈 대신 gap으로 간격 관리 */
+  .login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  /* 입력창 */
+  .login-input {
+    padding: 0.9rem 1rem;
+    border: 1px solid #d0d5dd;
+    border-radius: 6px;
+    font-size: 1rem;
+    outline: none;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+    background: #fff;
+  }
+  
+  .login-input:focus {
+    border-color: #2e7d32;
+    box-shadow: 0 0 0 3px rgba(46,125,50,0.18);
+  }
+  
+  /* 버튼 */
+  .login-btn {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    background: #2e7d32;
+    color: #fff;
+    font-weight: 600;
+    border: 0;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+  }
+  
+  .login-btn:hover { background: #1b5e20; }
+  .login-btn:active { transform: translateY(1px); }
+
+  .signup-btn {
+    padding: 1rem;
+    background: #acacac;
+    color: #fff;
+    font-weight: 600;
+    border: 0;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+  }
+  
+  /* 안전장치: body 기본 박스모델과 스크롤바로 인한 수평흔들림 방지 */
+  html, body { height: 100%; }
+  * { box-sizing: border-box; }
+  

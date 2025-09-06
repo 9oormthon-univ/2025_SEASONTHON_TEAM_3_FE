@@ -1,0 +1,134 @@
+:root {
+    --header-height: 60px;
+    --green: #2e7d32;
+    --border: #e5e7eb;
+    --muted: #555;
+  }
+  
+  .info-page {
+    grid-column: 1 / -1 !important;     /* 부모 그리드 컬럼 전부 차지 */
+    width: 100vw;                        /* 뷰포트 전체 가로 */
+    min-height: calc(100vh - var(--header-height));  /* 헤더 제외 높이 */
+    margin-top: var(--header-height);    /* fixed 헤더 피하기 */
+    display: flex;
+    place-items: center;                 /* 가로·세로 중앙 정렬 */
+    background: #f0f2f5;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* ▶ 간식 섹션들을 가로 2열로 배치 */
+  .snack-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* 정확히 2열 */
+    gap: 2rem 2rem; /* 행/열 간격 */
+    align-items: start;
+  }
+  
+  /* 각 섹션 카드 느낌 없이 여백만 */
+  .snack-section {
+    background: transparent;
+    padding: 1rem;
+    border: 1px solid #eceff3;
+    border-radius: 12px;
+  }
+  
+  /* 사진 왼쪽 + 텍스트 오른쪽 정렬은 유지 */
+  .info-header {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1.25rem;
+    margin-bottom: 1rem;
+  }
+  
+  .info-image {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: #fff;
+    flex-shrink: 0;
+  }
+  
+  .info-basic { flex: 1; }
+  
+  .info-name {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0 0 0.4rem 0;
+    color: #22313a;
+  }
+  
+  .info-brand {
+    color: var(--muted);
+    font-size: 1rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .badge-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .badge {
+    background: #2e7d32;
+    color: #fff;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  
+  /* 섹션 공통 */
+  .section { margin-top: 1rem; }
+  .section-title {
+    font-size: 1.1rem;
+    margin-bottom: 0.6rem;
+    color: var(--green);
+  }
+  
+  /* 영양 표 */
+  .serving {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .nutrition-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    background: #fff;
+  }
+  .nutrition-table th, .nutrition-table td {
+    border: 1px solid var(--border);
+    padding: 0.6rem;
+    text-align: left;
+  }
+  .nutrition-table th { background: #f9fafb; }
+  
+  /* 알레르겐 */
+  .allergens { font-size: 0.95rem; color: #d14343; }
+
+.img-wrap{ position: relative; display: inline-block; }
+.fav-float{
+  position: absolute; top: 8px; left: 8px;
+  width: 32px; height: 32px; border-radius: 999px;
+  display: grid; place-items: center;
+  border: 1px solid rgba(255,255,255,.6);
+  background: rgba(0,0,0,.18);
+  backdrop-filter: blur(2px);
+  cursor: pointer;
+}
+.fav-float.on{
+  border-color: rgba(229,57,53,.6);
+  background: rgba(229,57,53,.12);
+}
+
+  
+  /* 필요하면 모바일에서 1열로 스택 */
+  @media (max-width: 980px) {
+    .snack-grid { grid-template-columns: 1fr; }
+    .info-image { width: 160px; height: 160px; }
+  }
+  

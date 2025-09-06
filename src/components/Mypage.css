@@ -1,0 +1,139 @@
+:root{
+    --header-height: 60px;
+    --side-w: 240px;
+    --bg: #f5faef;
+    --panel: #f7fbf1;
+    --ink: #1f3326;
+    --muted: #7a8a7a;
+    --green: #6ea36d;
+    --green-d: #4f8750;
+    --border: #e4eddc;
+  }
+  
+  html, body { height: 100%; margin: 0; }
+  * { box-sizing: border-box; }
+  
+  .mypage{
+    min-height: 100vh;
+    padding-top: calc(var(--header-height) + 12px);
+    background: var(--bg);
+    display: grid;
+    grid-template-columns: var(--side-w) 1fr;
+    gap: 20px;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    background: var(--bg);
+    grid-column: 1 / -1 !important;
+    width: 100vw;
+  }
+  
+  /* 사이드바 */
+  .mp-sidebar{
+    margin-left: 20px;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    height: calc(100vh - var(--header-height) - 32px);
+    position: sticky;
+    top: calc(var(--header-height) + 16px);
+  }
+  .mp-user{
+    display: flex; gap: 12px; align-items: center;
+    padding-bottom: 12px; border-bottom: 1px solid var(--border);
+  }
+  .mp-avatar{ width: 44px; height: 44px; border-radius: 50%; object-fit: cover; }
+  .mp-name{ font-weight: 800; }
+  .mp-role{ color: var(--muted); font-size: 12px; }
+  .mp-nav{ display: grid; gap: 8px; margin-top: 16px; }
+  .mp-nav-item{
+    text-align: left;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    color: #22313a;
+  }
+  .mp-nav-item:hover{ background: #f4f8ee; }
+  .mp-nav-item.active{
+    background: #eaf4dd;
+    border-color: #dcebd0;
+    font-weight: 700;
+  }
+  
+  /* 본문 */
+  .mp-content{ margin-right: 20px; }
+  .mp-header{
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 12px;
+  }
+  .mp-header h1{ margin: 0 0 8px 0; font-size: 24px; font-weight: 900; }
+  .mp-tabs{ display: flex; gap: 12px; }
+  .mp-tab{
+    padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border);
+    background: #fff; color: #2b5f33; cursor: pointer; font-weight: 700; font-size: 13px;
+  }
+  .mp-tab.active{ background: #dff1e0; border-color: #cfe8d1; }
+  
+  /* 카드 패널 */
+  .mp-card{
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+  }
+  
+  /* 폼 */
+  .mp-form{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px 16px;
+  }
+  .field{ display: grid; gap: 6px; }
+  .field label{ font-size: 13px; color: var(--muted); }
+  .field input, .field select{
+    height: 40px; padding: 0 12px; border: 1px solid var(--border); border-radius: 10px; background: #fff;
+  }
+  .form-actions{ grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-top: 6px; }
+  .btn-primary{
+    height: 40px; padding: 0 16px; border-radius: 10px; border: 1px solid #cfe8d1;
+    background: linear-gradient(180deg,#7caf7a,#6ea36d); color: #fff; font-weight: 800; cursor: pointer;
+  }
+  .btn-outline{
+    height: 32px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--border); background: #fff; cursor: pointer;
+  }
+  
+  /* 찜한 간식 그리드 */
+  .mp-subtitle{ margin: 0 0 10px 4px; font-size: 16px; color: #2b5f33; }
+  .fav-grid{ display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .fav-card{
+    display: grid; grid-template-rows: 140px auto;
+    background: #fff; border: 1px solid var(--border); border-radius: 14px; overflow: hidden;
+  }
+  .fav-thumb img{ width: 100%; height: 100%; object-fit: cover; }
+  .fav-body{ padding: 10px 12px; display: grid; gap: 4px; }
+  .fav-name{ margin: 0; font-size: 16px; font-weight: 800; color: #1f2a30; }
+  .fav-brand{ margin: 0; font-size: 12px; color: var(--muted); }
+  .fav-meta{ display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-top: 4px; }
+  .fav-cat{
+    background: #eef6ee; color: #1b5e20; border: 1px solid #dbefdb; padding: 2px 8px; font-size: 11px;
+    border-radius: 999px; font-weight: 700;
+  }
+  .mp-empty{ color: #9a6; padding: 10px 4px; }
+  
+  /* 반응형 */
+  @media (max-width: 980px){
+    .mypage{ grid-template-columns: 1fr; }
+    .mp-sidebar{ position: relative; height: auto; margin: 0 20px; }
+    .fav-grid{ grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 640px){
+    .mp-form{ grid-template-columns: 1fr; }
+    .fav-grid{ grid-template-columns: 1fr; }
+  }
+  

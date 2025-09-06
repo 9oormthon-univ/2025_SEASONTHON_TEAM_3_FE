@@ -1,0 +1,153 @@
+:root {
+    --header-height: 60px; /* Header.css와 동일 */
+    --green: #2e7d32;
+    --green-dark: #1b5e20;
+    --border: #d0d5dd;
+    --muted: #667085;
+  }
+  
+  .page {
+    grid-column: 1 / -1 !important;
+    width: 100vw;
+    min-height: calc(100vh - var(--header-height));
+    margin-top: var(--header-height);
+    display: grid;
+    place-items: center;
+    background: #f0f2f5;
+    font-family: Arial, sans-serif;
+  }
+  
+  .signup-wrapper {
+    width: min(520px, 92vw);
+  }
+  
+  .signup-title {
+    margin: 0 0 1.5rem 0;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--green);
+  }
+  
+  .signup-form {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.9rem;
+  }
+  
+  .label {
+    font-size: 0.95rem;
+    color: #111;
+  }
+  
+  .input {
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-size: 1rem;
+    background: #fff;
+    outline: none;
+    transition: border 0.2s ease, box-shadow 0.2s ease;
+  }
+  
+  .input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(46,125,50,0.18);
+  }
+  
+  .password-wrap {
+    position: relative;
+  }
+  
+  .ghost-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--border);
+    background: #f8fafc;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .ghost-btn:hover { background: #eef2f7; }
+  
+  /* 비밀번호 강도 막대 (프론트 전용 시각화) */
+  .pw-meter {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: -0.3rem;
+  }
+  .pw-meter span {
+    height: 6px;
+    border-radius: 6px;
+    background: #e5e7eb;
+  }
+  .pw-meter.s-0 span:nth-child(n) { background: #e5e7eb; }
+  .pw-meter.s-1 span:nth-child(-n+1) { background: #f97316; }
+  .pw-meter.s-2 span:nth-child(-n+2) { background: #f59e0b; }
+  .pw-meter.s-3 span:nth-child(-n+3) { background: #22c55e; }
+  .pw-meter.s-4 span:nth-child(-n+4) { background: #16a34a; }
+  
+  .pw-hint {
+    margin: -0.2rem 0 0.2rem 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  
+  .agree {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    margin-top: 0.3rem;
+    font-size: 0.95rem;
+    color: #111;
+  }
+  .agree input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    accent-color: var(--green);
+  }
+  
+  .error {
+    color: #d14343;
+    font-size: 0.85rem;
+    margin: -0.2rem 0 0.4rem 0;
+  }
+  
+  .submit-btn {
+    margin-top: 0.4rem;
+    padding: 0.95rem 1rem;
+    border: 0;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 1rem;
+    color: #fff;
+    background: var(--green);
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+  }
+  .submit-btn:hover { background: var(--green-dark); }
+  .submit-btn:active { transform: translateY(1px); }
+  .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+  
+  .foot {
+    margin-top: 0.8rem;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .text-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--green);
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .text-btn:hover { text-decoration: underline; }
+  
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  
